@@ -5,7 +5,7 @@ const FooterComponent = () => {
         <div>
             <footer className={styles.footer}>
                 <a
-                    href="https://github.com/Ana-teston/"
+                    href="https://github.com/Ana-teston/discoverCoffeeStores"
                     target="_blank"
                     rel="noopener noreferrer"
                 >
