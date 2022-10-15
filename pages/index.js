@@ -4,6 +4,7 @@ import Banner from "../components/banner";
 import Image from "next/image";
 import Card from "../components/card.component";
 import {fetchCoffeeStores} from "../lib/coffee-stores";
+import useTrackLocation from "../hooks/use-track-location";
 
 export async function getStaticProps(context) {
     console.log(" Hi getStaticProps");
@@ -17,10 +18,17 @@ export async function getStaticProps(context) {
     };
 }
 
+
+
 export default function Home(props) {
     console.log("props", props);
+
+    const {handleTrackLocation, latLong, locationErrorMsg, isFindingLocation} = useTrackLocation();
+    console.log({latLong, locationErrorMsg}); //or ("latLong", latLong)
+
   const handleOnBtnClick = () => {
       console.log("hi banner button");
+      handleTrackLocation();
   }
   return (
     <div className={styles.container}>
@@ -31,13 +39,14 @@ export default function Home(props) {
       </Head>
 
       <main className={styles.main}>
-        <Banner buttonText="View stores nearby"  handleOnClick={handleOnBtnClick}/>
-        <div className={styles.heroImage}>
+        <Banner buttonText={isFindingLocation ? "Locating..." : "View stores nearby"}  handleOnClick={handleOnBtnClick}/>
+          {locationErrorMsg && <p className={styles.subtitle}>Something went wrong: {locationErrorMsg}</p>}
+          <div className={styles.heroImage}>
             <Image src="/static/hero-image.png" width={700} height={400}/>
         </div>
           {props.coffeeStores.length > 0 && (
-              <>
-                  <h2 className={styles.heading2}>Toronto Coffee Store</h2>
+              <div className={styles.sectionWrapper}>
+                  <h2 className={styles.heading2}>Berlin Coffee Stores</h2>
                   <div className={styles.cardLayout}>
                       { props.coffeeStores.map((coffeeStore) => {
                           return(
@@ -52,7 +61,7 @@ export default function Home(props) {
                           );
                       })}
                   </div>
-              </>
+              </div>
           )}
       </main>
     </div>
