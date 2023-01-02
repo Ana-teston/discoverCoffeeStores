@@ -5,17 +5,21 @@ import styles from"../../styles/coffee-stores.module.css"
 import Image from "next/image";
 import cls from "classnames";
 import {fetchCoffeeStores} from "../../lib/coffee-stores";
+import {useContext, useEffect, useState} from "react";
+import {StoreContext} from "../../store/store-context";
+import {isEmpty} from "../../utils";
 
 export async function getStaticProps(staticProps) {
     const params = staticProps.params;
-    console.log("params", params);
+
     const coffeeStores = await fetchCoffeeStores();
+    const findCoffeeStoresById = coffeeStores.find((coffeeStore) => {
+        return coffeeStore.id.toString() === params.id;
+    });
     return {
         props: {
-            coffeeStore: coffeeStores.find((coffeeStore) => {
-                return coffeeStore.id.toString() === params.id; //dynamic id
-            }),
-        },
+            coffeeStore: findCoffeeStoresById ? findCoffeeStoresById : {}, //dynamic id
+            },
     };
 }
 
@@ -34,13 +38,35 @@ export async function getStaticPaths() {
     };
 }
 
-const CoffeeStore = (props) => {
+const CoffeeStore = (initialProps) => {
     const router = useRouter();
+
+    const id = router.query.id;
+
+    const [ coffeeStore, setCoffeeStore] = useState(initialProps.coffeeStore || {});
 
     if (router.isFallback) {
         return <div>Loading...</div>
     }
-    const { address, name, postcode, region, imgUrl} = props.coffeeStore;
+    //console.log("initialProps.coffeeStore", initialProps.coffeeStore);
+
+    const {
+        state: {coffeeStores}
+    } = useContext(StoreContext);
+
+    useEffect(() => {
+        if (isEmpty(initialProps.coffeeStore)) {
+            if (coffeeStores.length > 0) {
+                const findCoffeeStoresById = coffeeStores.find(
+                    (coffeeStore) => {
+                        return coffeeStore.id.toString() === id;
+                    });
+                setCoffeeStore(findCoffeeStoresById)
+            }
+        }
+    }, [id, initialProps.coffeeStore, coffeeStores]);
+
+    const { address, name, postcode, region, imgUrl} = coffeeStore;
 
     const handleUpvoteButton = () => {
         console.log("handle up vote");
@@ -61,7 +87,6 @@ const CoffeeStore = (props) => {
                     <div className={styles.nameWrapper}>
                         <h1 className={styles.name}>{name}</h1>
                     </div>
-
                         <Image src={imgUrl || "https://images.unsplash.com/photo-1504753793650-d4a2b783c15e?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=2000&q=80"}
                                width={600}
                                height={369}

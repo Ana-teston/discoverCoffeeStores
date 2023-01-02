@@ -1,13 +1,13 @@
-import '../styles/globals.css'
-import FooterComponent from "../components/footer";
-
+import '../styles/globals.css';
+import StoreProvider from "../store/store-context";
 
 function MyApp({ Component, pageProps }) {
   return (
     <div>
-      <Component {...pageProps} />
-      <FooterComponent />
+      <StoreProvider>
+          <Component {...pageProps} />
+      </StoreProvider>
     </div>)
 }
 
-export default MyApp
+export default MyApp;

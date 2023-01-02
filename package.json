@@ -4,6 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
+    "preinstall": "npx npm-force-resolutions",
     "build": "next build",
     "start": "next start",
     "lint": "next lint"
@@ -14,5 +15,8 @@
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "unsplash-js": "^7.0.15"
+  },
+  "resolutions": {
+    "node-fetch": "https://registry.npmjs.org/node-fetch/-/node-fetch-2.6.7.tgz"
   }
 }
